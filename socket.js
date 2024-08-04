@@ -17,11 +17,23 @@ const removeOnlineUser = (socketId) => {
     onlineUsers = onlineUsers.filter(u => u.socketId !== socketId);
 };
 
+const findOnlineUser = (id) => {
+    return onlineUsers.find(u => u.id === id);
+};
+
 io.on('connection', (socket) => {
     socket.on('add/onlineUser', (user) => {
         addOnlineUser(user, socket.id);
-        console.log('Emit onlineUsers', onlineUsers);
         socket.emit('get/onlineUsers', onlineUsers);
+    });
+
+    socket.on('send/message', (data) => {
+        const onlineReceiver = findOnlineUser(data.receiver.id);
+
+        if (onlineReceiver) {
+            // Upload file to S3 ?? (imageUrl: data.file)
+            socket.to(onlineReceiver.socketId).emit('get/message', {...data, imageUrl: ''});
+        }
     });
 
     socket.on('disconnect', () => {
