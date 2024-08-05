@@ -1,4 +1,6 @@
- const io = require('socket.io')(7200, {
+const { v4: uuidv4 } = require('uuid');
+
+const io = require('socket.io')(7200, {
     cors: {
         origin: ['http://localhost:4000'],
     }
@@ -24,20 +26,30 @@ const findOnlineUser = (id) => {
 io.on('connection', (socket) => {
     socket.on('add/onlineUser', (user) => {
         addOnlineUser(user, socket.id);
-        socket.emit('get/onlineUsers', onlineUsers);
+        // Emit online users to all clients
+        io.sockets.emit('send/onlineUsers', onlineUsers);
     });
 
-    socket.on('send/message', (data) => {
-        const onlineReceiver = findOnlineUser(data.receiver.id);
+    socket.on('add/newMessage', (msg) => {
+        const onlineReceiver = findOnlineUser(msg.receiver.id);
 
         if (onlineReceiver) {
-            // Upload file to S3 ?? (imageUrl: data.file)
-            socket.to(onlineReceiver.socketId).emit('get/message', {...data, imageUrl: ''});
+            const tempId = uuidv4();
+            socket.to(onlineReceiver.socketId).emit('send/newMessage', {
+                id: tempId,
+                text: msg.message,
+                imageUrl: msg.imageUrl,
+                status: 'unseen',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                senderId: msg.sender.id,
+                receiverId: msg.receiver.id
+            });
         }
     });
 
     socket.on('disconnect', () => {
         removeOnlineUser(socket.id);
-        socket.emit('get/onlineUsers', onlineUsers);
+        io.sockets.emit('send/onlineUsers', onlineUsers);
     });
 });
