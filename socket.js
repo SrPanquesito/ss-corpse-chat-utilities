@@ -19,6 +19,10 @@ const removeOnlineUser = (socketId) => {
     onlineUsers = onlineUsers.filter(u => u.socketId !== socketId);
 };
 
+const removeOnlineUserByUserId = (userId) => {
+    onlineUsers = onlineUsers.filter(u => u.id !== userId);
+};
+
 const findOnlineUser = (id) => {
     return onlineUsers.find(u => u.id === id);
 };
@@ -36,6 +40,11 @@ io.on('connection', (socket) => {
         if (onlineReceiver) {
             socket.to(onlineReceiver.socketId).emit('send/newMessage', {...msg});
         }
+    });
+
+    socket.on('logout', (userId) => {
+        removeOnlineUserByUserId(userId);
+        io.sockets.emit('send/onlineUsers', onlineUsers);
     });
 
     socket.on('disconnect', () => {
