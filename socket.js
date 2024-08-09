@@ -1,5 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
-
 const io = require('socket.io')(7200, {
     cors: {
         origin: ['http://localhost:4000'],
@@ -32,6 +30,14 @@ io.on('connection', (socket) => {
         addOnlineUser(user, socket.id);
         // Emit online users to all clients
         io.sockets.emit('send/onlineUsers', onlineUsers);
+
+        // Emit new user to connected users so their contact list can get updated
+        if (onlineUsers.length > 0) {
+            const users = onlineUsers.filter(u=>u.id !== user.id);
+            for(let i = 0; i < users.length; i++ ){
+                socket.to(users[i].socketId).emit('send/newOnlineUser', user);
+            }
+        }
     });
 
     socket.on('add/newMessage', (msg) => {
