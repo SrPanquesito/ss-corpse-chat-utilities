@@ -31,20 +31,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('add/newMessage', (msg) => {
-        const onlineReceiver = findOnlineUser(msg.receiver.id);
+        const onlineReceiver = findOnlineUser(msg.receiverId);
 
         if (onlineReceiver) {
-            const tempId = uuidv4();
-            socket.to(onlineReceiver.socketId).emit('send/newMessage', {
-                id: tempId,
-                text: msg.message,
-                imageUrl: msg.imageUrl,
-                status: 'unseen',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                senderId: msg.sender.id,
-                receiverId: msg.receiver.id
-            });
+            socket.to(onlineReceiver.socketId).emit('send/newMessage', {...msg});
         }
     });
 
