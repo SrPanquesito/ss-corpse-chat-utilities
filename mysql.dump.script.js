@@ -9,6 +9,8 @@ const dump = spawn(process.env.DUMP_PATH, [
     '-u',
     process.env.MYSQL_USERNAME,
     '-p' + process.env.MYSQL_PASSWORD,
+    '--add-drop-database',
+    '--databases',
     process.env.MYSQL_DBNAME,
 ])
 
