@@ -5,12 +5,14 @@
   "main": "socket.js",
   "scripts": {
     "start": "nodemon socket.js",
+    "dump": "node ./mysql.dump.script.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "16.4.5",
     "nodemon": "3.1.4",
     "socket.io": "4.7.5",
     "uuid": "10.0.0"
