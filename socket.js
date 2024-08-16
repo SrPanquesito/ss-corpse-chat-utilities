@@ -1,6 +1,12 @@
 const io = require('socket.io')(7200, {
     cors: {
-        origin: ['http://localhost:4000'],
+        origin: [
+            'http://localhost:4000', 
+            'http://corpsechat.com', 
+            'https://corpsechat.com', 
+            'http://www.corpsechat.com', 
+            'https://www.corpsechat.com'
+        ],
     }
 });
 
