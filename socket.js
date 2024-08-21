@@ -1,12 +1,17 @@
-const io = require('socket.io')(8080, {
+require('dotenv').config();
+
+let allowlist = [];
+try {
+    allowlist = process.env.ALLOW_LIST ? JSON.parse(process.env.ALLOW_LIST) : []
+} catch (error) {
+    console.error('Failed to parse ALLOW_LIST:', error)
+}
+
+let port = process.env.SOCKET_PORT || 7200;
+
+const io = require('socket.io')(port, {
     cors: {
-        origin: [
-            'http://localhost:4000', 
-            'http://corpsechat.com', 
-            'https://corpsechat.com', 
-            'http://www.corpsechat.com', 
-            'https://www.corpsechat.com'
-        ],
+        origin: allowlist,
     }
 });
 
