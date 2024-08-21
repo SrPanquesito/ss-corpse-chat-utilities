@@ -12,7 +12,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 7200
 
 USER node
 
