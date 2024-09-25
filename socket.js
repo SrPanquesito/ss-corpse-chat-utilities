@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// Socket.io server initialization
 let allowlist = [];
 try {
     allowlist = process.env.ALLOW_LIST ? JSON.parse(process.env.ALLOW_LIST) : []
@@ -16,36 +17,40 @@ const io = require('socket.io')(port, {
     transports: ["websocket", "polling", "webtransport"]
 });
 
-let onlineUsers = [];
+// Socket live users logic
+let onlineUsers = new Map();
 const addOnlineUser = (user, socketId) => {
-    const checkUser = onlineUsers.some(u => u.id === user.id);
-
-    if (!checkUser) {
-        onlineUsers.push({ ...user, socketId });
+    if (!onlineUsers.has(user.id)) {
+        onlineUsers.set(user.id, { ...user, socketId });
     }
 };
 
 const removeOnlineUser = (socketId) => {
-    onlineUsers = onlineUsers.filter(u => u.socketId !== socketId);
+    for (let [id, user] of onlineUsers) {
+        if (user.socketId === socketId) {
+            onlineUsers.delete(id);
+            break;
+        }
+    }
 };
 
 const removeOnlineUserByUserId = (userId) => {
-    onlineUsers = onlineUsers.filter(u => u.id !== userId);
+    onlineUsers.delete(userId);
 };
 
 const findOnlineUser = (id) => {
-    return onlineUsers.find(u => u.id === id);
+    return onlineUsers.get(id);
 };
 
 io.on('connection', (socket) => {
     socket.on('add/onlineUser', (user) => {
         addOnlineUser(user, socket.id);
         // Emit online users to all clients
-        io.sockets.emit('send/onlineUsers', onlineUsers);
+        io.sockets.emit('send/onlineUsers', Array.from(onlineUsers.values()));
 
         // Emit new user to connected users so their contact list can get updated
         if (onlineUsers.length > 0) {
-            const users = onlineUsers.filter(u=>u.id !== user.id);
+            const users = Array.from(onlineUsers.values().filter(u=>u.id !== user.id));
             for(let i = 0; i < users.length; i++ ){
                 socket.to(users[i].socketId).emit('send/newOnlineUser', user);
             }
@@ -62,11 +67,11 @@ io.on('connection', (socket) => {
 
     socket.on('logout', (userId) => {
         removeOnlineUserByUserId(userId);
-        io.sockets.emit('send/onlineUsers', onlineUsers);
+        io.sockets.emit('send/onlineUsers', Array.from(onlineUsers.values()));
     });
 
     socket.on('disconnect', () => {
         removeOnlineUser(socket.id);
-        io.sockets.emit('send/onlineUsers', onlineUsers);
+        io.sockets.emit('send/onlineUsers', Array.from(onlineUsers.values()));
     });
 });
