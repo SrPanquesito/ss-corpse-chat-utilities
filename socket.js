@@ -12,7 +12,8 @@ let port = process.env.SOCKET_PORT || 7200;
 const io = require('socket.io')(port, {
     cors: {
         origin: allowlist,
-    }
+    },
+    transports: ["websocket", "polling", "webtransport"]
 });
 
 let onlineUsers = [];
