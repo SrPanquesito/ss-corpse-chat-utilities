@@ -45,12 +45,13 @@ const findOnlineUser = (id) => {
 io.on('connection', (socket) => {
     socket.on('add/onlineUser', (user) => {
         addOnlineUser(user, socket.id);
+        console.log('onlineUsers: ', onlineUsers.values());
         // Emit online users to all clients
         io.sockets.emit('send/onlineUsers', Array.from(onlineUsers.values()));
 
         // Emit new user to connected users so their contact list can get updated
-        if (onlineUsers.length > 0) {
-            const users = Array.from(onlineUsers.values().filter(u=>u.id !== user.id));
+        if (onlineUsers.size > 0) {
+            const users = Array.from(onlineUsers.values()).filter(u=>u.id !== user.id);
             for(let i = 0; i < users.length; i++ ){
                 socket.to(users[i].socketId).emit('send/newOnlineUser', user);
             }
