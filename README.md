@@ -3,10 +3,6 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="src/assets/images/logo.png" alt="Logo" width="80" height="80">
-  </a>
 
 <h3 align="center">Corpse Chat Server</h3>
 
@@ -15,7 +11,7 @@
     <br />
     Version: Monolithic Alpha.
     <br /><br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://corpsechat.com/">View Demo</a>
   </p>
 </div>
 
@@ -54,8 +50,3 @@ Unleash your true self. Embrace the darkness.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- ROADMAP -->
-## Roadmap (To-do)
-Or where did I last leave the project?
-
-- [ ] 
