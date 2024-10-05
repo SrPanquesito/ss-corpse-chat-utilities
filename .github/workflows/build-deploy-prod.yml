@@ -42,6 +42,7 @@ jobs:
               cd /home/${{ secrets.SSH_USER_NAME }}/code/ss-corpse-chat-utilities &&
               docker login -u ${{ vars.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }} &&
               docker stop socket && docker rm socket &&
+              docker image pull ${{ vars.DOCKERHUB_USERNAME }}/ss-corpse-chat-utilities:latest &&
               docker image rm ${{ vars.DOCKERHUB_USERNAME }}/ss-corpse-chat-utilities &&
               docker image pull ${{ vars.DOCKERHUB_USERNAME }}/ss-corpse-chat-utilities:latest &&
               docker run -it --name socket --platform linux/amd64 -d -p 8081:7200 ${{ vars.DOCKERHUB_USERNAME }}/ss-corpse-chat-utilities
